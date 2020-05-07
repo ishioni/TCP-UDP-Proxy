@@ -1,0 +1,12 @@
+version: '3.5'
+services:
+  udp-proxy:
+    image: pmaksymiuk/tcp-udp-proxy
+    environment:
+      PROTOCOL: ${PROTOCOL}
+      LISTENPORT: ${PORT}
+      TARGETIP: ${TARGET}
+      TARGETPORT: ${PORT}
+    ports:
+      - "54321:54321/udp"
+    restart: always
