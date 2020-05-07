@@ -1,9 +1,9 @@
-
 DEBUG=0
 
-DIRS := .  
-SOURCE  := $(shell find $(DIRS) -name "*.cpp") 
-PROG := ~/proxy_server
+DIRS := .
+SOURCE  := $(shell find $(DIRS) -name "*.cpp")
+PROG := proxy_server
+LIBDIR := /usr/lib/$(shell dpkg-architecture -q DEB_HOST_GNU_CPU)-$(shell dpkg-architecture -q DEB_HOST_GNU_SYSTEM)
 
 ifeq ($(DEBUG),1)
 CXXFLAGS_EXTRA=-pg -g -O3
@@ -18,22 +18,22 @@ endif
 OBJS    := $(SOURCE:.cpp=$(OBJ_TAIL))
 DEPS    := $(SOURCE:.cpp=$(DEP_TAIL))
 CXX = g++
-CPPFLAGS = -I . 
+CPPFLAGS = -I .
 CXXFLAGS = -Wall -Werror $(CXXFLAGS_EXTRA)
 LDFLAGS = -ldl \
 		-lpthread \
 		-rdynamic \
-		/usr/local/lib/libboost_thread.a \
-		/usr/local/lib/libboost_regex.a \
-		/usr/local/lib/libboost_system.a \
-		/usr/local/lib/libboost_filesystem.a \
-		/usr/local/lib/libboost_date_time.a \
-		/usr/local/lib/libboost_program_options.a \
+		$(LIBDIR)/libboost_thread.a \
+		$(LIBDIR)/libboost_regex.a \
+		$(LIBDIR)/libboost_system.a \
+		$(LIBDIR)/libboost_filesystem.a \
+		$(LIBDIR)/libboost_date_time.a \
+		$(LIBDIR)/libboost_program_options.a \
 		-lrt
 
 $(PROG):	$(OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS)  $(OBJS) -o $@ $(LDFLAGS)
-	
+
 %$(DEP_TAIL): %.cpp
 	@set -e; rm -f $@; \
 	$(CXX) -MM $(CPPFLAGS) $< -MT $(patsubst %.cpp,%.o,$<) > $@.$$$$; \
@@ -49,6 +49,4 @@ endif
 
 .PHONY : clean
 clean:
-	rm -rf $(OBJS) $(DEPS) 
-
-
+	rm -rf $(OBJS) $(DEPS)
